@@ -6,8 +6,8 @@ filelist <- dir('../../sanger 测序结果/') %>%
   str_subset(pattern = '\\.*.ab1$')
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
-
-geneid <- '3833'
+geneset
+geneid <- '144455'
 
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
