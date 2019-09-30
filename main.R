@@ -7,7 +7,7 @@ filelist <- dir('../../sanger 测序结果/') %>%
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 geneset
-geneid <- '144455'
+geneid <- '3833'
 
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
@@ -59,12 +59,13 @@ for (i in seq_len(length(seqset)-1)) {
   }
 }
 aln <- msa(seqset,
-           method = "ClustalOmega", 
            verbose = T, 
            order = 'input')
 
 print(aln, show="complete")
 
 Biostrings::writeXStringSet(seqset,filepath = '../seqset.fasta')
+source('msaprint.R')
+msaprintPDF(aln,geneid)
 
 
