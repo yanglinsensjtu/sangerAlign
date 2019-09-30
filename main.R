@@ -2,13 +2,15 @@ library(sangerseqR)
 library(Biostrings)
 library(stringr)
 library(msa)
+source('sangerseqquility.R')
 sanger.resul.tpath <- '../../sanger result/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$')
 
+
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 geneset
-geneid <- '19257'
+geneid <- '197257'
 
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
