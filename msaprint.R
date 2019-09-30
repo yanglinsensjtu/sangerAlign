@@ -29,5 +29,3 @@ msaprintPDF <- function(align.obj = align.obj, title = title){
   file.copy(paste(title,'.pdf', sep = ""), paste('../',title,'.pdf', sep = ""))
   file.remove(paste(title,'.pdf', sep = ""))
 }
-
-msaprintPDF(myFirstAlignment, title)
