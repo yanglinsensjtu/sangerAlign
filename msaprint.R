@@ -5,20 +5,29 @@ mySequences
 myFirstAlignment <- msa(mySequences)
 print(myFirstAlignment, show="complete")
 
-bdir = getwd()
-outdir = file.path(bdir,"alignements")
+title <- 'bln'
+msaprintPDF <- function(align.obj = align.obj, title = title){
+  cd <- getwd()
+  msatemp <- file.path(substr(cd,1,2),'msatemp')
+  
+  dir.create(msatemp)
+  outdir  <-  file.path(msatemp,"alignements")
+  fasta_file  <-  paste(outdir,".fasta",sep="")
+  
+  output  <-  paste(outdir,"/",title,".tex", sep="")
+  dir.create(outdir,showWarnings = FALSE)
+  msaPrettyPrint(align.obj,
+                 output="tex", 
+                 showNames="left",
+                 showLogo="none", 
+                 askForOverwrite=FALSE, 
+                 verbose=FALSE,
+                 file = output, 
+                 alFile = fasta_file)
+  tools::texi2pdf(output, clean=TRUE)
+  unlink(msatemp,recursive = T)
+  file.copy(paste(title,'.pdf', sep = ""), paste('../',title,'.pdf', sep = ""))
+  file.remove(paste(title,'.pdf', sep = ""))
+}
 
-fasta_file = paste(outdir,".fasta",sep="")
-output = file.path(outdir,"aln.tex", sep="")
-
-dir.create(outdir,showWarnings = FALSE)
-msaPrettyPrint(myFirstAlignment,
-               output="tex", 
-               showNames="none",
-               showLogo="none", 
-               askForOverwrite=FALSE, 
-               verbose=FALSE,
-               file = output, 
-               alFile = fasta_file)
-tools::texi2pdf(output, clean=TRUE)
-
+msaprintPDF(myFirstAlignment, title)
