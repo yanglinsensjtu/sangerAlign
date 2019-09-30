@@ -19,7 +19,7 @@ msaprintPDF <- function(align.obj = align.obj, title = title){
   msaPrettyPrint(align.obj,
                  output="tex", 
                  showNames="left",
-                 showLogo="none", 
+                 consensusColors = 'ColdHot',
                  askForOverwrite=FALSE, 
                  verbose=FALSE,
                  file = output, 
