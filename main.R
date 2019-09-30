@@ -6,7 +6,19 @@ source('sangerseqquility.R')
 sanger.resul.tpath <- '../../sanger result/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$')
-
+for (i in seq_len(length(filelist))) {
+  filepath <- str_c(sanger.resul.tpath,file[i])
+  temp <- readsangerseq(filepath)
+  temp <- traceMatrix(temp)
+  temp <- score.sanger(temp)
+  score <- mean(temp$score)
+  if (score > 2) {
+    next()
+  }else{
+    #file.copy(filepath, paste('../',filepath, sep = ""))
+    #file.remove(filepath)
+  }
+}
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 geneset
