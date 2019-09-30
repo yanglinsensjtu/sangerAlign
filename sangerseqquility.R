@@ -11,7 +11,7 @@ g50940.13 <- getTrace(g50940.13)
 
 g50940.14 <- getTrace(g50940.14)
 score.sanger <- function(data){
- data <- mutate(data, score = (data$A < 5)+
+ data <- mutate(data, score = (data$A<5)+
                                (data$C<5)+
                                (data$G <5)+ 
                                (data$`T`<5))
