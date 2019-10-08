@@ -3,26 +3,15 @@ library(Biostrings)
 library(stringr)
 library(msa)
 source('sangerseqquility.R')
+source('Non.specific.filter.R') # filter the nonspecific sequencing results
 sanger.resul.tpath <- '../../sanger result/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$')
-for (i in seq_len(length(filelist))) {
-  filepath <- str_c(sanger.resul.tpath,file[i])
-  temp <- readsangerseq(filepath)
-  temp <- traceMatrix(temp)
-  temp <- score.sanger(temp)
-  score <- mean(temp$score)
-  if (score > 2) {
-    next()
-  }else{
-    #file.copy(filepath, paste('../',filepath, sep = ""))
-    #file.remove(filepath)
-  }
-}
+
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 geneset
-geneid <- '197257'
+geneid <- '8085'
 
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
@@ -49,8 +38,6 @@ for (i in seq_len(length(seqset)-1)) {
               str_count(cn, pattern = 'T'),
               str_count(cn, pattern = 'C'),
               str_count(cn, pattern = 'G'))
-  
-  
   seqset[i] <- reverseComplement(seqset[i])
   msatemp<- msa(seqset[c(names(seqset)[i],geneid)],
                 method = "ClustalOmega", 
@@ -64,13 +51,11 @@ for (i in seq_len(length(seqset)-1)) {
     seqset[i] <- reverseComplement(seqset[i])
     next()
   }else{
-    
     if (str_detect(names(seqset[i]), 'F')) {
       names(seqset)[i] <- str_replace(names(seqset[i]), 'F', 'R')
     }else{
       names(seqset)[i] <- str_replace(names(seqset[i]), 'R', 'F')
     }
-   
   }
 }
 aln <- msa(seqset,
@@ -82,5 +67,5 @@ print(aln, show="complete")
 Biostrings::writeXStringSet(seqset,filepath = '../seqset.fasta')
 source('msaprint.R')
 msaprintPDF(aln,geneid)
-
+geneset
 
