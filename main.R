@@ -2,11 +2,21 @@ library(sangerseqR)
 library(Biostrings)
 library(stringr)
 library(msa)
-source('sangerseqquility.R')
+source('sangerseqquility.R')# Computing Sequencing Quality
 source('Non.specific.filter.R')#filter the nonspecific sequencing results
+source('false discovery abi file filter.R')#filter the false discovery abi files
+
+# read the abi files into the R env ---------------------------------------
+
 sanger.resul.tpath <- '../../sanger result/'
 filelist <- dir(sanger.resul.tpath) %>% 
-  str_subset(pattern = '\\.*.ab1$')
+  str_subset(pattern = '\\.*.ab1$') %>% str_sort(numeric = T)
+
+# read the sgRNA sequence into the R env ----------------------------------
+
+
+sgRNA <- readDNAStringSet('../../sgRNAsequence.fasta')
+
 
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
@@ -14,6 +24,19 @@ geneset
 geneid <- '8085'
 
 FDabi.filter(geneid, geneset)#remove the false discovery sequencing abi files
+
+# tidy and import the primer into the R env -------------------------------
+primerlist <- dir('../../primer/') %>% str_sort(numeric = T)
+tempfile <- str_subset(primerlist, pattern = geneid)
+primer <- readDNAStringSet(file.path('../../primer/', tempfile))
+primer[2] <- reverseComplement(primer[2])
+names(primer) <- paste(geneid,sep = '.' ,c('Fw','Rv'))
+primer
+
+
+
+# extract the sanger sequence into the DNSstringset obj -------------------
+
 
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
@@ -60,6 +83,10 @@ for (i in seq_len(length(seqset)-1)) {
     }
   }
 }
+seqset <- append(seqset, sgRNA, after = length(seqset))
+seqset <- append(seqset, primer, after = length(seqset))
+
+
 aln <- msa(seqset,
            verbose = T, 
            order = 'input')
@@ -70,3 +97,11 @@ Biostrings::writeXStringSet(seqset,filepath = '../seqset.fasta')
 source('msaprint.R')
 msaprintPDF(aln,geneid)
 
+# align the sgRNA and off target sequence ---------------------------------
+
+
+offsetsgRNA <- DNAStringSet()
+offsetsgRNA[1] <- toString(sgRNA)
+offsetsgRNA[2] <- toString(geneset[3])
+alnp <- msa(offsetsgRNA)
+print(alnp, show = 'complete')
