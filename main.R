@@ -20,8 +20,7 @@ sgRNA <- readDNAStringSet('../../sgRNAsequence.fasta')
 
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
-geneset
-geneid <- '8085'
+geneid <- '50940'
 
 FDabi.filter(geneid, geneset)#remove the false discovery sequencing abi files
 
@@ -32,7 +31,6 @@ primer <- readDNAStringSet(file.path('../../primer/', tempfile))
 primer[2] <- reverseComplement(primer[2])
 names(primer) <- paste(geneid,sep = '.' ,c('Fw','Rv'))
 primer
-
 
 
 # extract the sanger sequence into the DNSstringset obj -------------------
@@ -88,6 +86,8 @@ seqset <- append(seqset, primer, after = length(seqset))
 
 
 aln <- msa(seqset,
+           method = 'ClustalW',
+           gapOpening = 20,
            verbose = T, 
            order = 'input')
 
@@ -105,3 +105,5 @@ offsetsgRNA[1] <- toString(sgRNA)
 offsetsgRNA[2] <- toString(geneset[3])
 alnp <- msa(offsetsgRNA)
 print(alnp, show = 'complete')
+
+geneset
