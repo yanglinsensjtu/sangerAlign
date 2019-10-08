@@ -3,7 +3,7 @@ library(Biostrings)
 library(stringr)
 library(msa)
 source('sangerseqquility.R')
-source('Non.specific.filter.R') # filter the nonspecific sequencing results
+source('Non.specific.filter.R')#filter the nonspecific sequencing results
 sanger.resul.tpath <- '../../sanger result/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$')
