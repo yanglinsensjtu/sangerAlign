@@ -13,6 +13,8 @@ geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fa
 geneset
 geneid <- '8085'
 
+FDabi.filter(geneid, geneset)#remove the false discovery sequencing abi files
+
 pat <- str_c('\\.*',geneid,'\\.*')
 file <- str_subset(filelist, pattern = pat)
 file <- str_sort(file, numeric = T)
@@ -67,5 +69,4 @@ print(aln, show="complete")
 Biostrings::writeXStringSet(seqset,filepath = '../seqset.fasta')
 source('msaprint.R')
 msaprintPDF(aln,geneid)
-geneset
 
