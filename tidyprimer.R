@@ -8,3 +8,4 @@ primer[2] <- reverseComplement(primer[2])
 names(primer) <- paste(geneid,sep = '.' ,c('Fw','Rv'))
 primer
 
+
