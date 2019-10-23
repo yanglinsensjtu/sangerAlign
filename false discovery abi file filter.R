@@ -4,32 +4,24 @@ library(Biostrings)
 library(stringr)
 
 source('sangerseqquility.R')
-sanger.resul.tpath <- '../../sanger result/'
+sanger.resul.tpath <- '../sanger seq results/'
 
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$') %>% stringr::str_sort(numeric = T)
 
-geneid <- '8085'
+
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 
 FDabi.filter <- function(geneid = geneid,
                          geneset = geneset){
-  
-
   FD <- file.path(sanger.resul.tpath, 'FD')
-  
   if (file.exists(FD)) {
     print('The FD folder already existed')
   }else{
     dir.create(FD)
   }
-  
-  
-  
   filelist <- str_subset(filelist, pattern = geneid)
   for (i in seq_len(length(filelist))) {
-    
-  
     seqset <- DNAStringSet(use.names=TRUE)
     filepath <- str_c(sanger.resul.tpath,filelist[i])
     temp <- readsangerseq(filepath)
@@ -39,7 +31,7 @@ FDabi.filter <- function(geneid = geneid,
     seqset <- append(seqset, geneset[geneid], after = length(seqset))
     seqset
     msatemp<- msa(seqset,
-                  method = "ClustalOmega", 
+                  method = "ClustalW", 
                   order = 'input')
     cn1 <- msaConsensusSequence(msatemp)
     sum1 <- sum(str_count(cn1, pattern = 'A'),
@@ -48,7 +40,7 @@ FDabi.filter <- function(geneid = geneid,
                 str_count(cn1, pattern = 'G'))
     seqset[1] <- reverseComplement(seqset[1])
     msatemp<- msa(seqset,
-                  method = "ClustalOmega", 
+                  method = "ClustalW", 
                   order = 'input')
     cn2 <- msaConsensusSequence(msatemp)
     sum2 <- sum(str_count(cn2, pattern = 'A'),
@@ -65,5 +57,6 @@ FDabi.filter <- function(geneid = geneid,
   }
   geneset
 }
-
-
+geneid <- '8930'
+FDabi.filter(geneid = geneid,
+             geneset = geneset)
