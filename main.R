@@ -2,36 +2,41 @@ library(sangerseqR)
 library(Biostrings)
 library(stringr)
 library(msa)
-source('sangerseqquility.R')# Computing Sequencing Quality
 source('Non.specific.filter.R')#filter the nonspecific sequencing results
 source('false discovery abi file filter.R')#filter the false discovery abi files
+source('select xstring by row name.R')#select row of xstring object by name
+source('get the consensus seq.R')
 
 # read the abi files into the R env ---------------------------------------
 
-sanger.resul.tpath <- '../../sanger result/'
+sanger.resul.tpath <- '../sanger seq results/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$') %>% str_sort(numeric = T)
 
 # read the sgRNA sequence into the R env ----------------------------------
 
 
-sgRNA <- readDNAStringSet('../../sgRNAsequence.fasta')
+sgRNA <- readDNAStringSet('../sgRNA sequence.fasta')
 
 
 
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
-geneid <- '50940'
+genenames <- names(geneset)
+geneid <- '8930'
+
 
 FDabi.filter(geneid, geneset)#remove the false discovery sequencing abi files
 
 # tidy and import the primer into the R env -------------------------------
-primerlist <- dir('../../primer/') %>% str_sort(numeric = T)
-tempfile <- str_subset(primerlist, pattern = geneid)
-primer <- readDNAStringSet(file.path('../../primer/', tempfile))
-primer[2] <- reverseComplement(primer[2])
-names(primer) <- paste(geneid,sep = '.' ,c('Fw','Rv'))
-primer
 
+
+
+primer <- readDNAStringSet('../Primers_2019_10_10.fas')
+names(primer) <- str_extract(names(primer), pattern = '.*Primer..')
+primernames <- str_subset(names(primer), pattern = geneid)
+primernames <- str_sort(primernames)
+geneid.primer <- selectrow_byname(primer, primernames)
+geneid.primer[2] <- reverseComplement(geneid.primer[2])
 
 # extract the sanger sequence into the DNSstringset obj -------------------
 
@@ -70,10 +75,14 @@ for (i in seq_len(length(seqset)-1)) {
               str_count(cn, pattern = 'T'),
               str_count(cn, pattern = 'C'),
               str_count(cn, pattern = 'G'))
+  seqset[i] <- reverseComplement(seqset[i])
+  print(names(seqset[i]))
+  print(sum1)
+  print(sum2)
   if (sum1 > sum2) {
-    seqset[i] <- reverseComplement(seqset[i])
     next()
   }else{
+    seqset[i] <- reverseComplement(seqset[i])
     if (str_detect(names(seqset[i]), 'F')) {
       names(seqset)[i] <- str_replace(names(seqset[i]), 'F', 'R')
     }else{
@@ -81,13 +90,13 @@ for (i in seq_len(length(seqset)-1)) {
     }
   }
 }
+seqset <- getAlignSeq(seqset)
 seqset <- append(seqset, sgRNA, after = length(seqset))
-seqset <- append(seqset, primer, after = length(seqset))
+seqset <- append(seqset, geneid.primer, after = length(seqset))
 
 
 aln <- msa(seqset,
            method = 'ClustalW',
-           gapOpening = 20,
            verbose = T, 
            order = 'input')
 
@@ -106,4 +115,5 @@ offsetsgRNA[2] <- toString(geneset[3])
 alnp <- msa(offsetsgRNA)
 print(alnp, show = 'complete')
 
-geneset
+
+
