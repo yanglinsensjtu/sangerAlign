@@ -13,8 +13,10 @@ filelist <- dir(sanger.resul.tpath) %>%
 geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
 
 FDabi.filter <- function(geneid = geneid,
-                         geneset = geneset){
-  FD <- file.path(sanger.resul.tpath, 'FD')
+                         geneset = geneset,
+                         path = sanger.resul.tpath,
+                         consensus = numeric){
+  FD <- file.path(path, 'FD')
   if (file.exists(FD)) {
     print('The FD folder already existed')
   }else{
@@ -23,7 +25,7 @@ FDabi.filter <- function(geneid = geneid,
   filelist <- str_subset(filelist, pattern = geneid)
   for (i in seq_len(length(filelist))) {
     seqset <- DNAStringSet(use.names=TRUE)
-    filepath <- str_c(sanger.resul.tpath,filelist[i])
+    filepath <- str_c(path,filelist[i])
     temp <- readsangerseq(filepath)
     seq <- as.character(temp@primarySeq)
     seqset[1] <- seq
@@ -47,7 +49,7 @@ FDabi.filter <- function(geneid = geneid,
                 str_count(cn2, pattern = 'T'),
                 str_count(cn2, pattern = 'C'),
                 str_count(cn2, pattern = 'G'))
-    if (sum1 < 350 && sum2 < 350) {
+    if (sum1 < consensus && sum2 < consensus) {
       print(paste(filelist[i],'is false discovery abi file'))
       file.copy(filepath, FD)
       file.remove(filepath)
