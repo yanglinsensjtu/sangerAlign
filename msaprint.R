@@ -1,18 +1,12 @@
 library(msa)
-mySequenceFile <- system.file("examples", "exampleAA.fasta", package="msa")
-mySequences <- readAAStringSet(mySequenceFile)
-mySequences
-myFirstAlignment <- msa(mySequences)
-print(myFirstAlignment, show="complete")
-
-title <- 'bln'
-msaprintPDF <- function(align.obj = align.obj, title = title){
+msaprintPDF <- function(align.obj = align.obj, title = title, ... ){
   cd <- getwd()
   msatemp <- file.path(substr(cd,1,2),'msatemp')
   
   dir.create(msatemp)
   outdir  <-  file.path(msatemp,"alignements")
   fasta_file  <-  paste(outdir,".fasta",sep="")
+  
   
   output  <-  paste(outdir,"/",title,".tex", sep="")
   dir.create(outdir,showWarnings = FALSE)
@@ -23,7 +17,8 @@ msaprintPDF <- function(align.obj = align.obj, title = title){
                  askForOverwrite=FALSE, 
                  verbose=FALSE,
                  file = output, 
-                 alFile = fasta_file)
+                 alFile = fasta_file,
+                 ...)
   tools::texi2pdf(output, clean=TRUE)
   unlink(msatemp,recursive = T)
   file.copy(paste(title,'.pdf', sep = ""), paste('../',title,'.pdf', sep = ""))
