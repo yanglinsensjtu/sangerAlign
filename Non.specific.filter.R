@@ -3,7 +3,6 @@ library(Biostrings)
 library(stringr)
 
 source('sangerseqquility.R')
-sanger.resul.tpath <- '../sanger seq results/'
 
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$') %>% stringr::str_sort(numeric = T)
