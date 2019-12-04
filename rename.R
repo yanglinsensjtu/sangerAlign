@@ -16,7 +16,7 @@ for (i in seq_len(length(file))) {
 
 library(stringr)
 
-sanger.resul.tpath <- '../'
+sanger.resul.tpath <- '../sanger seq results/'
 filelist <- dir(sanger.resul.tpath) %>% 
   str_subset(pattern = '\\.*.ab1$') %>% 
   str_sort(numeric = T)
