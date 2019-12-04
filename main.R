@@ -16,22 +16,25 @@ filelist <- dir(sanger.resul.tpath) %>%
 # read the sgRNA sequence into the R env ----------------------------------
 
 
-sgRNA <- readDNAStringSet('../sgRNA sequence.fasta')
+sgRNA <- readDNAStringSet('../sgRNAsequence.txt')
 
 
 
-geneset <- readDNAStringSet(filepath = '../predict off target genes sequences.fasta')
+geneset <- readDNAStringSet(filepath = '../select genome for primer design.txt')
 genenames <- names(geneset)
-geneid <- '8930'
+geneid <- '55074'
 
 
-FDabi.filter(geneid, geneset)#remove the false discovery sequencing abi files
+FDabi.filter(geneid, 
+             geneset,
+             path = sanger.resul.tpath,
+             consensus = 350)#remove the false discovery sequencing abi files
 
 # tidy and import the primer into the R env -------------------------------
 
 
 
-primer <- readDNAStringSet('../Primers_2019_10_10.fas')
+primer <- readDNAStringSet('../Primers_2019_11_19.fas')
 names(primer) <- str_extract(names(primer), pattern = '.*Primer..')
 primernames <- str_subset(names(primer), pattern = geneid)
 primernames <- str_sort(primernames)
@@ -114,6 +117,6 @@ offsetsgRNA[1] <- toString(sgRNA)
 offsetsgRNA[2] <- toString(geneset[3])
 alnp <- msa(offsetsgRNA)
 print(alnp, show = 'complete')
-
+geneset
 
 

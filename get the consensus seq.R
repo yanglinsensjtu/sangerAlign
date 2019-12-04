@@ -3,6 +3,7 @@ getAlignSeq <- function(seqset = xstringset,
                         geneid = geneid){
   
   for (i in seq_len(length(seqset)-1)) {
+    i <- 1
     seqnames <- names(seqset)
     seqid <- seqnames[i]
     geneid <- seqnames[length(seqset)]
@@ -12,7 +13,11 @@ getAlignSeq <- function(seqset = xstringset,
                         seqid,
                         geneid)
   alna <- msa(a,
-              order = 'input')
+              method = 'ClustalW',
+              verbose = T, 
+              order = 'input',
+              gapOpening = 15,
+              gapExtension = 6.66)
   consensus <- msaConsensusSequence(alna)
   startI <- str_locate_all(consensus,'[ATCG]')
   locate <- range(unlist(startI))
